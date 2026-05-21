@@ -259,19 +259,17 @@
         applyHighlight(el);
       }
 
-      // Fit text inside bottom boxes: reduce font-size until content fits the fixed box height
       function fitBottomText() {
         const secs = document.querySelectorAll('.bottom-grid section');
         secs.forEach(sec => {
-          // ensure no scrollbar shows
           sec.style.overflow = 'hidden';
           const paragraphs = Array.from(sec.querySelectorAll('p'));
           if (paragraphs.length === 0) return;
-          let fs = 18; // starting font-size in px (larger by default)
+          let fs = 18;
           paragraphs.forEach(p => { p.style.fontSize = fs + 'px'; p.style.lineHeight = '1.18' });
-          // shrink until fits or reaches a readable minimum
+
           const minFs = 14;
-          // limit loops to avoid infinite loop
+
           let loops = 0;
           while (sec.scrollHeight > sec.clientHeight && fs > minFs && loops < 200) {
             fs -= 0.5;
@@ -281,24 +279,20 @@
         });
       }
 
-      // Debounced resize handler
       let fitTimer = null;
       function scheduleFit() {
         if (fitTimer) clearTimeout(fitTimer);
         fitTimer = setTimeout(() => { fitBottomText(); fitTimer = null; }, 150);
       }
-
-      // run on DOM ready and on resize
       if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fitBottomText);
       else fitBottomText();
       window.addEventListener('resize', scheduleFit);
-      // attach navigation button handlers in a non-inline way (works on GitHub Pages/CSP)
       function wireNavButtons() {
         const nav = document.querySelector('.logo-nav');
         if (!nav) return;
         nav.querySelectorAll('[data-target]').forEach(el => {
           el.addEventListener('click', (evt) => {
-            // allow default anchor behaviour but also trigger highlight
+
             const tgt = el.getAttribute('data-target');
             try { window.highlight(tgt); } catch (e) { console.warn('highlight error', e) }
           });
@@ -310,9 +304,9 @@
         document.addEventListener('click', function (ev) {
           const btn = ev.target.closest('[data-target]');
           if (!btn) return;
-          ev.preventDefault(); // prevent default link navigation
+          ev.preventDefault();
           const tgt = btn.getAttribute('data-target');
-          console.log('Button clicked, target:', tgt); // optional for debugging
+          console.log('Button clicked, target:', tgt);
           try {
             window.highlight(tgt);
           } catch (e) {
@@ -320,7 +314,7 @@
           }
         });
       });
-      // ensure fragment navigation highlights the target even if click handlers are blocked
+
       function handleHash() {
         const id = location.hash && location.hash.startsWith('#') ? location.hash.slice(1) : '';
         if (id) try { window.highlight(id); } catch (e) { }
